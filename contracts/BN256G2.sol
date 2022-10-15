@@ -155,7 +155,7 @@ library BN256G2 {
     function _FQ2Mul(
         uint256 xx, uint256 xy,
         uint256 yx, uint256 yy
-    ) internal pure returns (uint256, uint256) {
+    ) public pure returns (uint256, uint256) {
         return (
             submod(mulmod(xx, yx, FIELD_MODULUS), mulmod(xy, yy, FIELD_MODULUS), FIELD_MODULUS),
             addmod(mulmod(xx, yy, FIELD_MODULUS), mulmod(xy, yx, FIELD_MODULUS), FIELD_MODULUS)
@@ -206,6 +206,13 @@ library BN256G2 {
             mulmod(x, inv, FIELD_MODULUS),
             FIELD_MODULUS - mulmod(y, inv, FIELD_MODULUS)
         );
+    }
+
+    function isOnCurve(
+        uint256 xx, uint256 xy,
+        uint256 yx, uint256 yy
+    ) external pure returns (bool) {
+        return _isOnCurve(xx, xy, yx, yy);
     }
 
     function _isOnCurve(
@@ -261,7 +268,7 @@ library BN256G2 {
         uint256 pt1zx, uint256 pt1zy,
         uint256 pt2xx, uint256 pt2xy,
         uint256 pt2yx, uint256 pt2yy,
-        uint256 pt2zx, uint256 pt2zy) internal pure returns (uint256[6] memory pt3) {
+        uint256 pt2zx, uint256 pt2zy) public pure returns (uint256[6] memory pt3) {
             if (pt1zx == 0 && pt1zy == 0) {
                 (
                     pt3[PTXX], pt3[PTXY],
@@ -335,7 +342,7 @@ library BN256G2 {
         uint256 pt1xx, uint256 pt1xy,
         uint256 pt1yx, uint256 pt1yy,
         uint256 pt1zx, uint256 pt1zy
-    ) internal pure returns (
+    ) public pure returns (
         uint256 pt2xx, uint256 pt2xy,
         uint256 pt2yx, uint256 pt2yy,
         uint256 pt2zx, uint256 pt2zy
@@ -367,7 +374,7 @@ library BN256G2 {
         uint256 pt1xx, uint256 pt1xy,
         uint256 pt1yx, uint256 pt1yy,
         uint256 pt1zx, uint256 pt1zy
-    ) internal pure returns (uint256[6] memory pt2) {
+    ) public pure returns (uint256[6] memory pt2) {
         while (d != 0) {
             if ((d & 1) != 0) {
                 pt2 = _ECTwistAddJacobian(

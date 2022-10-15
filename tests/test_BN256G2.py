@@ -1,6 +1,7 @@
 import unittest
 
-from ethereum.tools import tester
+from brownie import BN256G2, accounts
+from brownie.exceptions import VirtualMachineError
 
 
 CURVE_ORDER = 21888242871839275222246405745257275088548364400416034343698204186575808495617
@@ -94,13 +95,12 @@ class contractWrapper(object):
         return pt1 == pt2
 
     def is_on_curve(self, pt1):
-        return self.bn256g2._isOnCurve(pt1[0][0], pt1[0][1], pt1[1][0], pt1[1][1])
+        return self.bn256g2.isOnCurve(pt1[0][0], pt1[0][1], pt1[1][0], pt1[1][1])
 
 
 class TestBN256G2(unittest.TestCase):
     def setUp(self):
-        chain = tester.Chain()
-        bn256g2 = chain.contract(open('BN256G2.sol').read().replace('internal', 'public'), language='solidity')
+        bn256g2 = accounts[0].deploy(BN256G2)
         self.contractJ = contractWrapperJ(bn256g2)
         self.contract = contractWrapper(bn256g2)
 
@@ -137,15 +137,15 @@ class TestBN256G2(unittest.TestCase):
 
     def test_invalid_curves_G2(self):
         eq, add, multiply, is_inf, is_on_curve = self.contract.eq, self.contract.add, self.contract.multiply, contractWrapper.is_inf, self.contract.is_on_curve
-        with self.assertRaises(tester.TransactionFailed) as e:
+        with self.assertRaises(VirtualMachineError) as e:
             add(multiply(G2, 9), ((1, 1), (1, 1)))
-        with self.assertRaises(tester.TransactionFailed) as e:
+        with self.assertRaises(VirtualMachineError) as e:
             add(((1, 1), (1, 1)), multiply(G2, 9))
-        with self.assertRaises(tester.TransactionFailed) as e:
+        with self.assertRaises(VirtualMachineError) as e:
             add(((0, 0), (0, 0)), ((1, 1), (1, 1)))
-        with self.assertRaises(tester.TransactionFailed) as e:
+        with self.assertRaises(VirtualMachineError) as e:
             add(((1, 1), (1, 1)), ((0, 0), (0, 0)))
-        with self.assertRaises(tester.TransactionFailed) as e:
+        with self.assertRaises(VirtualMachineError) as e:
             multiply(((1, 1), (1, 1)), 9)
 
 if __name__ == '__main__':
