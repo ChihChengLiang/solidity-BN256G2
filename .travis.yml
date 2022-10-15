@@ -1,9 +1,0 @@
-dist: xenial
-language: python
-python:
-  - "3.6"
-before_install:
-  - pip install ethereum py-solc
-  - python -m solc.install v0.4.24
-script:
-  - SOLC_BINARY=$HOME/.py-solc/solc-v0.4.24/bin/solc pytest
